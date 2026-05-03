@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+option java_package = "com.weather.grpc";
+option java_outer_classname = "WeatherProto";
+option java_multiple_files = true;
+
+package weather;
+
+// =========================================
+// DEFINIÇÃO DO SERVIÇO
+// Cada "rpc" é um método remoto que pode ser chamado pelo cliente
+// =========================================
+service WeatherService {
+
+  // 1. Retorna a temperatura atual de uma cidade
+  rpc ObterTemperaturaAtual (CidadeRequest) returns (TemperaturaResponse);
+
+  // 2. Retorna previsão dos próximos 5 dias
+  rpc PrevisaoCincoDias (CidadeRequest) returns (PrevisaoResponse);
+
+  // 3. Lista todas as cidades cadastradas
+  rpc ListarCidades (ListarCidadesRequest) returns (ListarCidadesResponse);
+
+  // 4. Cadastra uma nova cidade
+  rpc CadastrarCidade (CadastrarCidadeRequest) returns (CadastrarCidadeResponse);
+
+  // 5. Retorna estatísticas climáticas de uma cidade
+  rpc EstatisticasClimaticas (CidadeRequest) returns (EstatisticasResponse);
+}
+
+// =========================================
+// DEFINIÇÃO DAS MENSAGENS (Request/Response)
+// Cada campo tem: tipo, nome e número de campo (tag)
+// =========================================
+
+// Request genérico para operações que recebem apenas o nome da cidade
+message CidadeRequest {
+  string cidade = 1;
+}
+
+// Response com temperatura atual
+message TemperaturaResponse {
+  string cidade = 1;
+  double temperatura = 2;    // graus Celsius
+  string descricao = 3;      // ex: "Ensolarado", "Nublado"
+  string unidade = 4;        // "Celsius"
+}
+
+// Uma entrada de previsão para um dia específico
+message PrevisaoDia {
+  string data = 1;
+  double temp_min = 2;
+  double temp_max = 3;
+  string descricao = 4;
+}
+
+// Response com lista de previsões
+message PrevisaoResponse {
+  string cidade = 1;
+  repeated PrevisaoDia dias = 2;  // "repeated" = lista/array
+}
+
+// Request vazio para listar cidades (sem parâmetros necessários)
+message ListarCidadesRequest {}
+
+// Response com lista de nomes de cidades
+message ListarCidadesResponse {
+  repeated string cidades = 1;
+}
+
+// Request para cadastrar nova cidade
+message CadastrarCidadeRequest {
+  string nome = 1;
+  double temperatura_inicial = 2;
+}
+
+// Response do cadastro
+message CadastrarCidadeResponse {
+  bool sucesso = 1;
+  string mensagem = 2;
+}
+
+// Response com estatísticas climáticas
+message EstatisticasResponse {
+  string cidade = 1;
+  double media = 2;
+  double minima = 3;
+  double maxima = 4;
+  int32 total_registros = 5;
+}
